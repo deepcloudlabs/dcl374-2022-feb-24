@@ -2,13 +2,17 @@ package com.example.service.business;
 
 import java.util.Random;
 
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import com.example.service.RandomNumberGenerator;
 
 @Service
-@Profile({"test", "preprod", "prod"})
+//@Profile({"test", "preprod", "prod"})
+@ConditionalOnProperty(
+	value = "random-service", 
+	havingValue = "secure"
+)
 public class SecureRandomNumberGenerator implements RandomNumberGenerator {
 	private Random random;
 

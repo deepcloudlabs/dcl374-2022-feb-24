@@ -5,10 +5,9 @@ import java.util.Random;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile({"test", "preprod", "prod"})
+//@Profile({"test", "preprod", "prod"})
 public class AppConfig {
 
 	@Bean

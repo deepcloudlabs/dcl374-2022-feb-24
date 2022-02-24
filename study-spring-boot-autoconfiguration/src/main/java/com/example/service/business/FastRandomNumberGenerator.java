@@ -2,15 +2,18 @@ package com.example.service.business;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import com.example.service.RandomNumberGenerator;
 
 @Service
 //@Primary
-@Profile("dev")
+//@Profile("dev")
+@ConditionalOnProperty(
+	value = "random-service", 
+	havingValue = "fast"
+)
 public class FastRandomNumberGenerator implements RandomNumberGenerator {
 	
 	public FastRandomNumberGenerator() {
