@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CRM Panel</title>
+    <style type="text/css">
+        @import "css/bootstrap.css";
+        @import "css/bootstrap-theme.css";
+        @import "css/toastr.css";
+        @import url('css/drag-and-drop.css');
+    </style>
+    <script type="application/javascript" src="js/lib/jquery-1.11.3.js"></script>
+    <script type="application/javascript" src="js/lib/i18next-1.7.7.js"></script>
+    <script type="application/javascript" src="js/lib/bootstrap.js"></script>
+    <script type="application/javascript" src="js/lib/toastr.min.js"></script>
+    <script type="application/javascript" src="js/lib/knockout-3.4.2.debug.js"></script>
+    <script type="application/javascript" src="js/lib/knockout.validation.js"></script>
+    <script type="application/javascript" src="js/lib/knockout-localization.js"></script>
+    <script type="application/javascript" src="js/lib/ko-file.js"></script>
+    <script type="application/javascript" src="js/crm-config.js"></script>
+    <script type="application/javascript" src="js/crm-util.js"></script>
+    <script type="application/javascript" src="js/customer.js"></script>
+    <script type="application/javascript" src="js/address.js"></script>
+    <script type="application/javascript" src="js/crm.js"></script>
+    <script type="application/javascript" src="js/app.js"></script>
+</head>
+<body>
+<p>
+<div class="container">
+    <div>
+        <button class="btn btn-warning"
+                data-bind="click: changeLangToEn"
+                data-i18n="buttonEnglish"></button>
+        <button class="btn btn-info"
+                data-bind="click: changeLangToTr"
+                data-i18n="buttonTurkish"></button>
+    </div>
+    <p></p>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-10">
+                    <h3 class="panel-title" data-i18n="panelTitleCustomer"></h3>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label for="identityNo" data-i18n="labelIdentityNo"></label>
+                <input type="text"
+                       data-bind="value: customer.identity"
+                       id="identityNo"
+                       class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="fullName" data-i18n="labelFullName"></label>
+                <input type="text"
+                       data-bind="value: customer.fullname"
+                       id="fullName"
+                       class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="email" data-i18n="labelEmail"></label>
+                <input type="text"
+                       data-bind="value: customer.email"
+                       id="email"
+                       class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="phone" data-i18n="labelPhone"></label>
+                <input type="text"
+                       data-bind="value: customer.phone"
+                       id="phone"
+                       class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="byear" data-i18n="labelBirthYear"></label>
+                <input type="text"
+                       data-bind="value: customer.birthYear"
+                       id="byear"
+                       class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="photo" data-i18n="labelPhoto"></label>
+                <img class="img-thumbnail photo"
+                     data-bind="attr: { src: fileData().dataUrl }">
+                <label class="btn btn-info btn-file">
+                    <input type="file"
+                           data-bind="fileInput: fileData"
+                           style="display: none;" id="photo"></input>
+                    <span data-i18n="buttonBrowse"></span>
+                </label>
+
+                <div class="drop-zone" type="text" id="filedrag"
+                     data-bind="event: { drop: function (data,e) { $root.insertFile(e,data);},dragover: function(data,e){ $root.dragover(e);}}">
+                </div>
+            </div>
+            <div class="form-group">
+                <button data-bind="click: addCustomer, enable: customer.valid()"
+                        data-i18n="buttonAdd"
+                        class="btn btn-info"></button>
+                <button data-bind="click: updateCustomer, enable: customer.valid()"
+                        data-i18n="buttonUpdate"
+                        class="btn btn-warning"></button>
+                <button data-bind="click: removeCustomerByIdentity, enable: customer.identity.isValid()"
+                        data-i18n="buttonDelete"
+                        class="btn btn-danger"></button>
+                <button data-bind="click: findCustomerByIdentity, enable: customer.identity.isValid()"
+                        data-i18n="buttonFind"
+                        class="btn btn-success"></button>
+                <button data-bind="click: findAllCustomers"
+                        data-i18n="buttonFindAll"
+                        class="btn btn-success"></button>
+            </div>
+        </div>
+    </div>
+    <p></p>
+    <div data-bind="visible: customer.addresses().length>=0" class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title" data-i18n="panelCustomerAddresses"></h3>
+            </div>
+            <div class="panel-body">
+                <button class="btn btn-success" data-bind="click: addEmptyAddress">Add Address</button>
+                <table class="table table-responsive">
+                    <thead>
+                    <tr>
+                        <th data-i18n="columnNo"></th>
+                        <th data-i18n="columnAddressType"></th>
+                        <th data-i18n="columnStreet"></th>
+                        <th data-i18n="columnZipCode"></th>
+                        <th data-i18n="columnCity"></th>
+                        <th data-i18n="columnCountry"></th>
+                        <th data-i18n="columnOperations"></th>
+                    </tr>
+                    </thead>
+                    <tbody data-bind="foreach: { data: customer.addresses, as: 'addr'}">
+                    	<tr>
+                           <td data-bind="text: $index()+1"></td>
+                           <td><select class="form-control" data-bind="options: $root.addressTypes, value: addr.type" ></td>
+                           <td><input class="form-control" type="text" class="form-control" data-bind="value: addr.street"></td>
+                           <td><input class="form-control" type="text" data-bind="value: addr.zipCode"></td>
+                           <td><input class="form-control" type="text" data-bind="value: addr.city"></td>
+                           <td><input class="form-control" type="text" data-bind="value: addr.country"></td>
+                           <td><button class="btn btn-danger" data-bind="click: $root.removeAddress">Remove</button></td>
+                    	</tr>
+                    </tbody>
+                </table>
+            </div>	   
+    </div>
+    <div data-bind="visible: customers().length>0" class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title" data-i18n="panelTitleCustomers"></h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-responsive">
+                    <thead>
+                    <tr>
+                        <th data-i18n="columnNo"></th>
+                        <th data-i18n="columnIdentityNo"></th>
+                        <th data-i18n="columnFullName"></th>
+                        <th data-i18n="columnEmail"></th>
+                        <th data-i18n="columnPhone"></th>
+                        <th data-i18n="columnOperations"></th>
+                    </tr>
+                    </thead>
+                    <tbody data-bind="foreach: { data: customers, as: 'cust'}">
+                    <tr data-bind="click: $root.copyCustomer">
+                        <td data-bind="text: $index()+1"></td>
+                        <td data-bind="text: cust.identity"></td>
+                        <td data-bind="text: cust.fullname"></td>
+                        <td data-bind="text: cust.email"></td>
+                        <td data-bind="text: cust.phone"></td>
+                        <td>
+                            <button data-bind="click: $root.removeCustomerByIdentity"
+                                    data-i18n="buttonDelete"
+                                    class="btn btn-danger">Delete
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
