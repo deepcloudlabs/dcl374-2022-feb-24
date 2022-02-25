@@ -1,11 +1,9 @@
 package com.example.crm.service;
 
 import java.lang.reflect.Field;
-import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.modelmapper.ModelMapper;
@@ -73,7 +71,7 @@ public class CustomerService {
 	    	 Field declaredField;
 			try {
 				declaredField = Customer.class.getDeclaredField(property);
-				if (property.equals("phone") && Objects.nonNull(declaredField)) {
+				if (property.equals("phone")) {
 					declaredField.setAccessible(true);
 					declaredField.set(customer, value.toString());
 					declaredField.setAccessible(false);
