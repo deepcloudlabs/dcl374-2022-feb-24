@@ -1,15 +1,15 @@
 package com.example.crm.service;
 
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.crm.dto.request.AddCustomerRequest;
@@ -48,15 +48,17 @@ public class CustomerService {
 				.toList();
 	}
 
-	@Transactional(isolation = Isolation.READ_COMMITTED, 
-			propagation=Propagation.NEVER)
+	@Transactional
 	public AddCustomerResponse createCustomer(AddCustomerRequest request) {
 		var customer = modelMapper.map(request, Customer.class);
 		return modelMapper.map(customerRepository.save(customer), AddCustomerResponse.class);
 	}
 
 	public UpdateCustomerResponse updateCustomer(String identity, UpdateCustomerRequest request) {
-		// TODO Auto-generated method stub
+		var customer = customerRepository.findById(identity)
+				  .orElseThrow(customerNotFoundExceptionSupplier);
+
+		
 		return null;
 	}
 
