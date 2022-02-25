@@ -49,7 +49,7 @@ public class CustomerService {
 	}
 
 	@Transactional(isolation = Isolation.READ_COMMITTED, 
-			propagation=Propagation.REQUIRED)
+			propagation=Propagation.NEVER)
 	public AddCustomerResponse createCustomer(AddCustomerRequest request) {
 		var customer = modelMapper.map(request, Customer.class);
 		return modelMapper.map(customerRepository.save(customer), AddCustomerResponse.class);
