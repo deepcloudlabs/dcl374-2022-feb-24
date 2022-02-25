@@ -10,19 +10,30 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+import com.example.validation.TcKimlikNo;
 
 @Entity
 @Table(name = "customers")
 public class Customer {
 	@Id
 	@Column(length = 11)
+	@TcKimlikNo
 	private String identity;
 	@Column(nullable = false)
+	@Size(min=5)
 	private String fullname;
 	@Column(unique = true)
+	@Email
 	private String email;
 	@Column(unique = true)
+	@NotBlank
 	private String phone;
+	@Max(2008)
 	private int birthYear;
 	@Lob
 	@Column(columnDefinition = "longblob")
