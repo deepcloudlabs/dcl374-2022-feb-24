@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -71,7 +72,7 @@ public class CrmRestController {
 		return customerService.patchCustomer(identity,request);
 	}
 	
-	@GetMapping("{identity}")
+	@DeleteMapping("{identity}")
 	public CustomerResponse deleteCustomerByIdentity(
 	  @PathVariable @TcKimlikNo String identity) {
 		return customerService.removeById(identity);
