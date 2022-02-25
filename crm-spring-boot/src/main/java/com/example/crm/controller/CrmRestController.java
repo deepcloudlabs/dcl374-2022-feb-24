@@ -58,7 +58,7 @@ public class CrmRestController {
 		return customerService.createCustomer(request);
 	}
 	
-	@PutMapping("{identity}")
+	@PutMapping(value="{identity}")
 	public UpdateCustomerResponse updateCustomer(
 		@PathVariable @TcKimlikNo String identity,	
 		@RequestBody @Validated UpdateCustomerRequest request) {

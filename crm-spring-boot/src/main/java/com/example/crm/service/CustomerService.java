@@ -1,5 +1,6 @@
 package com.example.crm.service;
 
+import java.lang.reflect.Field;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
@@ -54,22 +55,43 @@ public class CustomerService {
 		return modelMapper.map(customerRepository.save(customer), AddCustomerResponse.class);
 	}
 
+	@Transactional
 	public UpdateCustomerResponse updateCustomer(String identity, UpdateCustomerRequest request) {
 		var customer = customerRepository.findById(identity)
-				  .orElseThrow(customerNotFoundExceptionSupplier);
-
-		
-		return null;
+		.orElseThrow(customerNotFoundExceptionSupplier);
+	     modelMapper.map(request,customer);	     
+	    return modelMapper.map(
+	    		customerRepository.save(customer), 
+	    		 UpdateCustomerResponse.class);
 	}
 
+	@Transactional
 	public UpdateCustomerResponse patchCustomer(String identity, Map<String, Object> request) {
-		// TODO Auto-generated method stub
-		return null;
+		var customer = customerRepository.findById(identity)
+		                                 .orElseThrow(customerNotFoundExceptionSupplier);
+	     request.forEach((property, value) -> {
+	    	 Field declaredField;
+			try {
+				declaredField = Customer.class.getDeclaredField(property);
+				if (property.equals("phone") && Objects.nonNull(declaredField)) {
+					declaredField.setAccessible(true);
+					declaredField.set(customer, value.toString());
+					declaredField.setAccessible(false);
+				}
+			} catch (Exception e) {
+			}
+	     });	     
+		return modelMapper.map(
+	    		customerRepository.save(customer), 
+	    		 UpdateCustomerResponse.class);
 	}
 
+	@Transactional
 	public CustomerResponse removeById(String identity) {
-		// TODO Auto-generated method stub
-		return null;
+		var customer = customerRepository.findById(identity)
+                .orElseThrow(customerNotFoundExceptionSupplier);
+		customerRepository.deleteById(identity);
+        return modelMapper.map(customer,CustomerResponse.class); 
 	}
 
 }

@@ -117,6 +117,7 @@ class CrmViewModel {
 			method: "POST",
 			url: `${AppConfig.REST_API_BASE_URL}/customers`,
 			contentType: "application/json",
+			accept: "application/json",
 			data: json,
 			success: (customer) => {
 				ShowMessage(AppConfig.MESSAGE_TYPE.SUCCESS,

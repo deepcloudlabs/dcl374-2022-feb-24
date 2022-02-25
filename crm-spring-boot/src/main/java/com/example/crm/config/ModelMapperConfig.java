@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.example.crm.dto.request.UpdateCustomerRequest;
-import com.example.crm.dto.response.CustomerResponse;
 import com.example.crm.entity.Customer;
 
 @Configuration
@@ -19,7 +18,7 @@ public class ModelMapperConfig {
 	                                            Customer> 
 	UPDATE_CUSTOMER_REQUEST_TO_CUSTOMER_CONVERTER = 
 	(context) -> {
-		var customer = new Customer();
+		var customer = context.getDestination();
 		var updateCustReq = context.getSource();
 		if (Objects.nonNull(updateCustReq.getPhoto()))
 		   customer.setPhoto(
