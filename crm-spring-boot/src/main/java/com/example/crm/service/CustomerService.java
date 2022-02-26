@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.crm.dto.request.AddCustomerRequest;
@@ -57,9 +58,11 @@ public class CustomerService {
 	public UpdateCustomerResponse updateCustomer(String identity, UpdateCustomerRequest request) {
 		var customer = customerRepository.findById(identity)
 		.orElseThrow(customerNotFoundExceptionSupplier);
-	     modelMapper.map(request,customer);	     
+	     modelMapper.map(request,customer);	  
+	    // customerRepository.flush();
 	    return modelMapper.map(
-	    		customerRepository.save(customer), 
+	    		customerRepository.saveAndFlush(customer),
+	    		//customer,
 	    		 UpdateCustomerResponse.class);
 	}
 

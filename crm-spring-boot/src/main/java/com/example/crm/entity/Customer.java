@@ -3,9 +3,11 @@ package com.example.crm.entity;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
@@ -15,10 +17,13 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import com.example.validation.TcKimlikNo;
 
 @Entity
 @Table(name = "customers")
+@DynamicUpdate
 public class Customer {
 	@Id
 	@Column(length = 11)
@@ -38,7 +43,8 @@ public class Customer {
 	@Lob
 	@Column(columnDefinition = "longblob")
 	private byte[] photo;
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, 
+			fetch = FetchType.EAGER)
 	private List<Address> addresses;
 	@Enumerated
 	private CustomerType type;

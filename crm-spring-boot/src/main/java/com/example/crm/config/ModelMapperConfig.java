@@ -1,5 +1,6 @@
 package com.example.crm.config;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.example.crm.dto.request.UpdateCustomerRequest;
+import com.example.crm.entity.Address;
 import com.example.crm.entity.Customer;
 
 @Configuration
@@ -28,6 +30,19 @@ public class ModelMapperConfig {
        customer.setPhone(updateCustReq.getPhone());
        customer.setFullname(updateCustReq.getFullname());
        customer.setType(updateCustReq.getType());
+       var addresses = updateCustReq.getAddresses()
+    		   .stream()
+    		   .map( address -> {
+    			   var addr = new Address();
+    			   addr.setCity(address.getCity());
+    			   addr.setCountry(address.getCountry());
+    			   addr.setZipCode(address.getZipCode());
+    			   addr.setStreet(address.getStreet());
+    			   addr.setId(address.getId());
+    			   addr.setType(address.getType());
+    			   return addr;
+    		   }).toList();
+       customer.setAddresses(new ArrayList<>(addresses));
 	   return customer;
 	};
 
