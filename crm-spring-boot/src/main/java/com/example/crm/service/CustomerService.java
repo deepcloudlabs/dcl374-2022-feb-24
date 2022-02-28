@@ -17,13 +17,18 @@ import com.example.crm.dto.response.AddCustomerResponse;
 import com.example.crm.dto.response.CustomerResponse;
 import com.example.crm.dto.response.UpdateCustomerResponse;
 import com.example.crm.entity.Customer;
+import com.example.crm.exception.CustomerNotFoundException;
 import com.example.crm.repository.CustomerRepository;
 
 @Service
 public class CustomerService {
-	private static final Supplier<IllegalArgumentException>
+	private static final Supplier<CustomerNotFoundException>
 	      customerNotFoundExceptionSupplier = 
-	      () -> new IllegalArgumentException("Cannot find the customer");
+	      () -> new CustomerNotFoundException(
+	    		  "Cannot find the customer",
+	    		  1000, 
+	    		  "821b0947-4758-49da-a0f6-a08fad807016"
+	       );
 	private CustomerRepository customerRepository;
 	private ModelMapper modelMapper;
 	

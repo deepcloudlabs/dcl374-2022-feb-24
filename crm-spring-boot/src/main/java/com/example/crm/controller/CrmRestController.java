@@ -29,6 +29,7 @@ import com.example.crm.dto.request.UpdateCustomerRequest;
 import com.example.crm.dto.response.AddCustomerResponse;
 import com.example.crm.dto.response.CustomerResponse;
 import com.example.crm.dto.response.UpdateCustomerResponse;
+import com.example.crm.exception.CustomerNotFoundException;
 import com.example.crm.service.CustomerService;
 import com.example.validation.TcKimlikNo;
 
@@ -90,10 +91,12 @@ public class CrmRestController {
 		return customerService.removeById(identity);
 	}
 	
-	@ExceptionHandler(IllegalArgumentException.class)
+	@ExceptionHandler(CustomerNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErrorMessage handleIllegalArgumentException(
-			IllegalArgumentException e) {
-		return new ErrorMessage(e.getMessage());
+	public ErrorMessage handleCustomerNotFoundException(
+			CustomerNotFoundException e) {
+		return new ErrorMessage(e.getMessage(),
+				e.getI18nId(),
+				e.getDebugId());
 	}
 }

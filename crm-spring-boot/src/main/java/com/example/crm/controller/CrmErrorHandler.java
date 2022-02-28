@@ -41,7 +41,7 @@ public class CrmErrorHandler {
 	@ExceptionHandler(Throwable.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ErrorMessage handleAllOtherExceptions(Throwable t) {
-		return new ErrorMessage(t.getMessage());
+		return new ErrorMessage(t.getMessage(),100,"");
 	}
 	
 }
