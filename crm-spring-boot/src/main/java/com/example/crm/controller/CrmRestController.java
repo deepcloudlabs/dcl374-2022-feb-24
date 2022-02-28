@@ -3,6 +3,10 @@ package com.example.crm.controller;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,16 +42,20 @@ public class CrmRestController {
 
 	// localhost:9100/crm/api/v1/customers/11111111110
 	@GetMapping("{identity}")
-	public CustomerResponse getCustomerByIdentity(
+	public ResponseEntity<CustomerResponse> getCustomerByIdentity(
 	  @PathVariable @TcKimlikNo String identity) {
-		return customerService.findById(identity);
+		return ResponseEntity.ok(
+				customerService.findById(identity)
+		); 
 	}
 	
 	@GetMapping
 	public List<CustomerResponse> getCustomersByPage(
 		@RequestParam(required = false, defaultValue = "0") 
+		@Min(0)
 		int pageNo, 
 		@RequestParam(required = false, defaultValue = "20")  
+		@Max(50)
 		int pageSize){
 		  return customerService.findAll(pageNo,pageSize);
 	}
