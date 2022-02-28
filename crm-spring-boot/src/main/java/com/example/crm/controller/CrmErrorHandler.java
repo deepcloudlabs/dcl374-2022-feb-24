@@ -1,7 +1,6 @@
 package com.example.crm.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.ConstraintViolationException;
 
@@ -24,18 +23,24 @@ public class CrmErrorHandler {
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public List<FieldErrorMessage> handleMethodArgumentNotValidException(
 			MethodArgumentNotValidException e) {
-		return e.getAllErrors().stream().;
+		return e.getAllErrors()
+				.stream()
+				.map(oe -> new FieldErrorMessage(oe.getObjectName(), oe.getDefaultMessage()))
+				.toList();
 	}
 	
 	
 	@ExceptionHandler(ConstraintViolationException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public List<FieldErrorMessage> handleConstraintViolationException(
 			ConstraintViolationException e) {
-		return new ErrorMessage(e.getMessage());
+		return e.getConstraintViolations()
+				.stream()
+				.map(cv -> new FieldErrorMessage(cv.getPropertyPath().toString(),cv.getMessage()))
+				.toList();
 	}
 	
 }
