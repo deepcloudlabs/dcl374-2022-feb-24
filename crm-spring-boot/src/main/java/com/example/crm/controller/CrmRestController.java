@@ -6,9 +6,11 @@ import java.util.Map;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +19,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.RequestScope;
 
+import com.example.crm.dto.error.ErrorMessage;
 import com.example.crm.dto.request.AddCustomerRequest;
 import com.example.crm.dto.request.UpdateCustomerRequest;
 import com.example.crm.dto.response.AddCustomerResponse;
@@ -84,5 +88,12 @@ public class CrmRestController {
 	public CustomerResponse deleteCustomerByIdentity(
 	  @PathVariable @TcKimlikNo String identity) {
 		return customerService.removeById(identity);
+	}
+	
+	@ExceptionHandler(IllegalArgumentException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ErrorMessage handleIllegalArgumentException(
+			IllegalArgumentException e) {
+		return new ErrorMessage(e.getMessage());
 	}
 }

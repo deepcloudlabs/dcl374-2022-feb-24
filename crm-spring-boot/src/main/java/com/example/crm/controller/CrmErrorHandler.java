@@ -15,12 +15,7 @@ import com.example.crm.dto.error.ErrorMessage;
 @RestControllerAdvice
 public class CrmErrorHandler {
 
-	@ExceptionHandler(IllegalArgumentException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErrorMessage handleIllegalArgumentException(
-			IllegalArgumentException e) {
-		return new ErrorMessage(e.getMessage());
-	}
+
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -41,6 +36,12 @@ public class CrmErrorHandler {
 				.stream()
 				.map(cv -> new FieldErrorMessage(cv.getPropertyPath().toString(),cv.getMessage()))
 				.toList();
+	}
+	
+	@ExceptionHandler(Throwable.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ErrorMessage handleAllOtherExceptions(Throwable t) {
+		return new ErrorMessage(t.getMessage());
 	}
 	
 }
