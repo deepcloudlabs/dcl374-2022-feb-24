@@ -2,6 +2,7 @@ package com.example.crm;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.example.crm.dto.request.AddCustomerRequest;
 import com.example.crm.dto.response.AddCustomerResponse;
 import com.example.crm.dto.response.CustomerResponse;
+import com.example.crm.exception.CustomerNotFoundException;
 import com.example.crm.service.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -72,6 +74,33 @@ class CrmSpringBootApplicationTests {
         .andExpect(jsonPath("$.fullname",is(fullname)))
         .andExpect(jsonPath("$.email",is(email)))
         .andExpect(jsonPath("$.phone",is(phone)));
+		// 4. Tear-down
+	}
+	
+	@DisplayName("get request with identity should return status ok")
+	@ParameterizedTest
+	@CsvFileSource(resources = "customers.csv")
+	void getCustomerByIdentityShoudlReturnNotFound(
+			String identity,
+			String fullname,
+			String email,
+			String phone) throws Throwable {
+		// 1. Test Setup
+		var customerNotFoundException = 
+				new CustomerNotFoundException("Customer not found",
+				1000,
+				"b9a0ffd4-add0-43b1-b448-ba1ee48b7ce5");
+		Mockito.when(customerService.findById(identity))
+		       .thenThrow(customerNotFoundException);
+		// 2. Call exercise method
+		mockMvc.perform(
+				get("/customers/"+identity)
+				.accept(MediaType.APPLICATION_JSON)
+				)
+		// 3. Verification
+		.andExpect(status().isNotFound())
+		.andExpect(jsonPath("$.debugId",is("b9a0ffd4-add0-43b1-b448-ba1ee48b7ce5")))
+        .andExpect(jsonPath("$.i18nId",is(1000)));		
 		// 4. Tear-down
 	}
 	
@@ -130,6 +159,34 @@ class CrmSpringBootApplicationTests {
 		)
 		// 3. Verification
 		.andExpect(status().isOk())
+        .andExpect(jsonPath("$.identity",is(identity)))
+        .andExpect(jsonPath("$.fullname",is(fullname)))
+        .andExpect(jsonPath("$.email",is(email)))
+        .andExpect(jsonPath("$.phone",is(phone)));
+		// 4. Tear-down
+	}
+	
+	@ParameterizedTest
+	@CsvFileSource(resources = "customers.csv")
+	void removeCustomerByIdentityShoudlReturnOk(
+			String identity,
+			String fullname,
+			String email,
+			String phone) throws Throwable {
+		// 1. Test Setup
+		var customerResponse = new CustomerResponse();
+		customerResponse.setIdentity(identity);
+		customerResponse.setFullname(fullname);
+		customerResponse.setEmail(email);
+		customerResponse.setPhone(phone);
+		Mockito.when(customerService.removeById(identity))
+		       .thenReturn(customerResponse);
+		// 2. Call exercise method
+        mockMvc.perform(
+        	delete("/customers/"+identity).accept(MediaType.APPLICATION_JSON)
+        )
+        // 3. Verification
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$.identity",is(identity)))
         .andExpect(jsonPath("$.fullname",is(fullname)))
         .andExpect(jsonPath("$.email",is(email)))
