@@ -2,7 +2,8 @@ package com.example.crm;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,8 +23,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.crm.dto.request.AddCustomerRequest;
+import com.example.crm.dto.response.AddCustomerResponse;
 import com.example.crm.dto.response.CustomerResponse;
 import com.example.crm.service.CustomerService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest(
 	classes = CrmSpringBootApplication.class,
@@ -32,6 +37,10 @@ import com.example.crm.service.CustomerService;
 class CrmSpringBootApplicationTests {
 	@Autowired
 	MockMvc mockMvc;
+	@Autowired
+	ModelMapper modelMapper;
+	@Autowired
+	ObjectMapper objectMapper;
 	
 	@MockBean
 	CustomerService customerService;
@@ -92,6 +101,39 @@ class CrmSpringBootApplicationTests {
 		.andExpect(jsonPath("$.length()",is(2)))
 		.andExpect(jsonPath("$[0].identity",is("11111111110")))
 		.andExpect(jsonPath("$[1].identity",is("92558957066")));
+		// 4. Tear-down
+	}
+	
+	@ParameterizedTest
+	@CsvFileSource(resources = "customers.csv")
+	void addCustomerShoudlReturnOk(
+			String identity,
+			String fullname,
+			String email,
+			String phone) throws Throwable {
+		// 1. Test Setup
+		var request = new AddCustomerRequest();
+		request.setIdentity(identity);
+		request.setFullname(fullname);
+		request.setEmail(email);
+		request.setPhone(phone);
+		var response = modelMapper.map(request,
+				AddCustomerResponse.class);
+		Mockito.when(customerService.createCustomer(request))
+		       .thenReturn(response);
+		// 2. Call exercise method
+		mockMvc.perform(
+				post("/customers")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request))
+		)
+		// 3. Verification
+		.andExpect(status().isOk())
+        .andExpect(jsonPath("$.identity",is(identity)))
+        .andExpect(jsonPath("$.fullname",is(fullname)))
+        .andExpect(jsonPath("$.email",is(email)))
+        .andExpect(jsonPath("$.phone",is(phone)));
 		// 4. Tear-down
 	}
 

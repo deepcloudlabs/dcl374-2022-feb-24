@@ -1,6 +1,7 @@
 package com.example.crm.dto.request;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
@@ -90,6 +91,23 @@ public class AddCustomerRequest {
 
 	public void setType(CustomerType type) {
 		this.type = type;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(identity);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AddCustomerRequest other = (AddCustomerRequest) obj;
+		return Objects.equals(identity, other.identity);
 	}
 
 }
