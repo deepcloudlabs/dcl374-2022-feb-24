@@ -1,11 +1,15 @@
 package com.example.crm;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.mockito.Mockito;
@@ -32,7 +36,7 @@ class CrmSpringBootApplicationTests {
 	@MockBean
 	CustomerService customerService;
 	
-	@DisplayName("")
+	@DisplayName("get request with identity should return status ok")
 	@ParameterizedTest
 	@CsvFileSource(resources = "customers.csv")
 	void getCustomerByIdentityShoudlReturnOk(
@@ -59,6 +63,35 @@ class CrmSpringBootApplicationTests {
         .andExpect(jsonPath("$.fullname",is(fullname)))
         .andExpect(jsonPath("$.email",is(email)))
         .andExpect(jsonPath("$.phone",is(phone)));
+		// 4. Tear-down
+	}
+	
+	@Test
+	void getCustomersAtFirstPageShoudlReturnOk() throws Throwable {
+		// 1. Test Setup
+		var customer1 = new CustomerResponse();
+		customer1.setIdentity("11111111110");
+		customer1.setFullname("Jack Bauer");
+		customer1.setEmail("jack@example.com");
+		customer1.setPhone("+90 542 555 5555");
+		var customer2 = new CustomerResponse();
+		customer2.setIdentity("92558957066");
+		customer2.setFullname("Kate Austen");
+		customer2.setEmail("kate@example.com");
+		customer2.setPhone("+90 542 666 6666");
+		Mockito.when(customerService.findAll(0,2))
+		       .thenReturn(List.of(customer1,customer2));
+		// 2. Call exercise method
+		mockMvc.perform(
+				get("/customers?pageNo=0&pageSize=2")
+				.accept(MediaType.APPLICATION_JSON)
+				)
+		// 3. Verification
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$",hasSize(2)))
+		.andExpect(jsonPath("$.length()",is(2)))
+		.andExpect(jsonPath("$[0].identity",is("11111111110")))
+		.andExpect(jsonPath("$[1].identity",is("92558957066")));
 		// 4. Tear-down
 	}
 

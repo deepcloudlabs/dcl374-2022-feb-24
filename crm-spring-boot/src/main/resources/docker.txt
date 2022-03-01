@@ -1,0 +1,11 @@
+docker run --name cassandra-db -d -p 9042:9042 cassandra:latest
+
+docker exec -it cassandra-db /bin/bash
+
+cqlsh
+> CREATE KEYSPACE IF NOT exists crm
+  WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};
+> describe tables;
+> describe cluster;
+
+nodetool status
