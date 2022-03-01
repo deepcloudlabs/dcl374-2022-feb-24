@@ -20,7 +20,7 @@ public class KafkaProducerService {
 	
 	@EventListener
 	public void sendOrderThroughKafka(StockMessage message) 
-			throws Throwable{
+			throws Throwable {
 		kafkaTemplate.send(topic, 
 				objectMapper.writeValueAsString(message));
 	}
